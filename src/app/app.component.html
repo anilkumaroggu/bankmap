@@ -12,6 +12,24 @@
 
     <div class="col-sm-3">
 
+      <!-- Base Layers -->
+      <div class="form-group row">
+        <label class="col-12 col-form-label">Base Layers</label>
+        <div class="col-11 offset-1" *ngFor="let layer of baseLayers">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio"
+                     [name]="layer.id"
+                     [(ngModel)]="baseLayer"
+                     (ngModelChange)="apply()"
+                     [value]="layer.id">
+              {{layer.name}}
+            </label>
+          </div>
+        </div>
+      </div>
+
+
       <!-- Overlay Layers -->
       <div class="form-group row" *ngIf="overlays?.length > 0">
         <label class="col-12 col-form-label">Overlay Layers</label>
@@ -21,7 +39,7 @@
               <input class="form-check-input" type="checkbox"
                      [name]="layer.id"
                      [(ngModel)]="overlays[i].enabled"
-                     (ngModelChange)="apply(layer)">
+                     (ngModelChange)="apply()">
               {{layer.name}}
             </label>
           </div>
@@ -47,14 +65,6 @@
     </div>
 
     <div class="col-sm-9 card-body">
-
-      <!--<div leaflet style="height: 300px;"-->
-           <!--[leafletOptions]="options"-->
-           <!--[leafletBaseLayers]="baseLayers"-->
-           <!--[leafletLayers]="markers"-->
-           <!--[leafletLayersControlOptions]="layersControlOptions">-->
-      <!--</div>-->
-
 
       <div leaflet style="height: 300px;"
            [leafletOptions]="options"

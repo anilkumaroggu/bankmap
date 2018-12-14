@@ -59,26 +59,33 @@ export class AppComponent
   circle  = {
     id: 'circle',
     name: 'Circle',
-    enabled: true,
-    layer: circle([46.95, -122], {radius: 5000})
+    enabled: false,
+    layer: circle([46.95, -122], {radius: 500000})
   };
   polygon = {
     id: 'polygon',
     name: 'Polygon',
-    enabled: true,
-    layer: polygon([[46.8, -121.85], [46.92, -121.92], [46.87, -121.8]])
+    enabled: false,
+    layer: polygon([[146.8, -121.85], [126.92, -156.92], [-146.87, -121.8]])
+  };
+  polygonx = {
+    id: 'polygonx',
+    name: 'PolygonX',
+    enabled: false,
+    layer: polygon([[46.8, -121.55], [86.8, -121.55], [86.8, -161.55], [46.8, 161.55]])
   };
   square  = {
     id: 'square',
     name: 'Square',
-    enabled: true,
-    layer: polygon([[46.8, -121.55], [46.9, -121.55], [46.9, -121.7], [46.8, -121.7]])
+    enabled: false,
+    layer: polygon([[20.8, -90.55], [46.8, -90.55], [46.8, -116.55], [20.8, -116.55]])
   };
-  marker  = {
+
+  marker = {
     id: 'marker',
     name: 'Marker',
-    enabled: true,
-    layer: marker([46.879966, -121.726909], {
+    enabled: false,
+    layer: marker([ 46.879966, -121.726909 ], {
       icon: icon({
         iconSize: [25, 41],
         iconAnchor: [13, 41],
@@ -87,27 +94,27 @@ export class AppComponent
       })
     })
   };
+
   geoJSON = {
     id: 'geoJSON',
     name: 'Geo JSON Polygon',
-    enabled: true,
+    enabled: false,
     layer: geoJSON(
       ({
         type: 'Polygon',
         coordinates: [[
-          [-121.6, 46.87],
-          [-121.5, 46.87],
-          [-121.5, 46.93],
-          [-121.6, 46.87]
+          [121.6, 46.87],
+          [41.5, -26.87],
+          [-41.5, 26.93],
+          [-41.6, 46.87]
         ]]
       }) as any,
       {style: () => ({color: '#ff7800'})})
   };
 
-  baseLayers = {
-    'Open Street Map': this.LAYER_OSM.layer,
-    'Open Cycle Map': this.LAYER_OCM.layer
-  };
+  baseLayer = '';
+
+  baseLayers = [ this.LAYER_OSM, this.LAYER_OCM]
 
   // Values to bind to Leaflet Directive
   layers: Layer[] = [...this.markers];
@@ -115,21 +122,27 @@ export class AppComponent
   // Values to bind to Leaflet Directive
   layersControlOptions = {
     position: 'bottomright',
-    baseLayers: this.baseLayers,
+    baseLayers: {
+      'Open Street Map': this.LAYER_OSM.layer,
+      'Open Cycle Map': this.LAYER_OCM.layer
+    },
     overlays: {
       Circle: this.circle.layer,
       Square: this.square.layer,
       Polygon: this.polygon.layer,
       Marker: this.marker.layer,
-      GeoJSON: this.geoJSON.layer
+      GeoJSON: this.geoJSON.layer,
+      PolygonX: this.polygonx.layer
     }
   };
-  overlays =[ this.circle, this.polygon, this.square, this.marker, this.geoJSON ];
+  overlays =[ this.circle, this.polygon, this.square, this.marker, this.geoJSON, this.polygonx ];
 
-  apply(layer) {
+  apply() {
+
+    if(!this.baseLayer) this.baseLayer = this.LAYER_OCM.id;
 
     // Get the active base layer
-    const baseLayer = this.overlays.find((l: any) => (l.id === layer.id));
+    const baseLayer = this.baseLayers.find((l: any) => (l.id === this.baseLayer));
 
     // Get all the active overlay layers
     const newLayers = this.overlays
@@ -137,8 +150,7 @@ export class AppComponent
                           .map((l: any) => l.layer);
     newLayers.unshift(baseLayer.layer);
 
-    this.layers = newLayers;
-
+    this.layers = [...this.markers,...newLayers];
     return false;
   }
 
